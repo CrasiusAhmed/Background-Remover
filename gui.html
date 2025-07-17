@@ -1,0 +1,382 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Background Remover Pro</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="icon" href="img/logo.png" type="image/png">
+    <!-- Feather Icons for modern icons -->
+    <script src="https://unpkg.com/feather-icons"></script>
+</head>
+<body>
+    <!-- Custom Title Bar -->
+    <div class="title-bar">
+        <div class="title-bar-left">
+            <img src="img/logo.png" alt="Logo" class="title-bar-logo">
+            <span class="title-bar-text">AI Background Remover Pro</span>
+        </div>
+        <div class="title-bar-controls">
+            <button id="minimize-btn" class="title-bar-btn" title="Minimize">
+                <i data-feather="minus"></i>
+            </button>
+            <button id="maximize-btn" class="title-bar-btn" title="Maximize">
+                <i data-feather="square"></i>
+            </button>
+            <button id="close-btn" class="title-bar-btn close" title="Close">
+                <i data-feather="x"></i>
+            </button>
+        </div>
+    </div>
+
+    <div class="app-container">
+        <!-- Sidebar Navigation -->
+        <nav class="sidebar">
+            <div class="sidebar-header">
+                <img src="img/logo.png" alt="Logo" class="sidebar-logo">
+                <h2 class="sidebar-title">BG Remover</h2>
+            </div>
+            
+            <div class="sidebar-menu">
+                <div class="menu-section">
+                    <h3 class="menu-section-title">TOOLS</h3>
+                    <ul class="menu-items">
+                        <li class="menu-item active" data-tab="single">
+                            <i data-feather="image"></i>
+                            <span>Single Image</span>
+                        </li>
+                        <li class="menu-item" data-tab="batch">
+                            <i data-feather="layers"></i>
+                            <span>Batch Process</span>
+                        </li>
+                        <li class="menu-item" data-tab="settings">
+                            <i data-feather="settings"></i>
+                            <span>Settings</span>
+                        </li>
+                    </ul>
+                </div>
+                
+                <div class="menu-section">
+                    <h3 class="menu-section-title">HELP</h3>
+                    <ul class="menu-items">
+                        <li class="menu-item" data-tab="about">
+                            <i data-feather="info"></i>
+                            <span>About</span>
+                        </li>
+                        <li class="menu-item" data-tab="support">
+                            <i data-feather="help-circle"></i>
+                            <span>Support</span>
+                        </li>
+                        <li class="menu-item" data-tab="license">
+                            <i data-feather="file-text"></i>
+                            <span>License</span>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+            
+            <div class="sidebar-footer">
+                <div class="user-info">
+                    <div class="user-avatar">
+                        <i data-feather="user"></i>
+                    </div>
+                    <div class="user-details">
+                        <span class="user-name">Pro User</span>
+                        <span class="user-status">Premium</span>
+                    </div>
+                </div>
+            </div>
+        </nav>
+
+        <!-- Main Content Area -->
+        <main class="main-content">
+            <!-- Single Image Tab -->
+            <div id="single" class="tab-content active">
+                <div class="content-header">
+                    <h1 class="page-title">Single Image Processing</h1>
+                    <p class="page-subtitle">Remove background from a single image with AI precision</p>
+                </div>
+                
+                <div class="upload-section">
+                    <div class="upload-area" onclick="pywebview.api.select_image()">
+                        <div class="upload-icon">
+                            <i data-feather="upload-cloud"></i>
+                        </div>
+                        <h3>Drop your image here or click to browse</h3>
+                        <p>Supports PNG, JPG, JPEG, BMP, WEBP formats</p>
+                        <button class="btn-primary">
+                            <i data-feather="folder"></i>
+                            Select Image
+                        </button>
+                    </div>
+                </div>
+                
+                <div id="single-file-results" class="results-section"></div>
+                <div id="loading-spinner" class="spinner" style="display: none;">
+                    <div class="spinner-ring"></div>
+                    <p>Processing your image...</p>
+                </div>
+            </div>
+
+            <!-- Batch Processing Tab -->
+            <div id="batch" class="tab-content">
+                <div class="content-header">
+                    <h1 class="page-title">Batch Processing</h1>
+                    <p class="page-subtitle">Process multiple images at once for maximum efficiency</p>
+                </div>
+                
+                <div class="batch-setup">
+                    <div class="folder-cards">
+                        <div class="folder-card">
+                            <div class="folder-icon">
+                                <i data-feather="folder"></i>
+                            </div>
+                            <h3>Input Folder</h3>
+                            <p id="input-folder-path" class="folder-path">No folder selected</p>
+                            <button class="btn-secondary" onclick="pywebview.api.select_input_folder()">
+                                <i data-feather="folder-plus"></i>
+                                Select Input Folder
+                            </button>
+                        </div>
+                        
+                        <div class="folder-arrow">
+                            <i data-feather="arrow-right"></i>
+                        </div>
+                        
+                        <div class="folder-card">
+                            <div class="folder-icon">
+                                <i data-feather="folder-minus"></i>
+                            </div>
+                            <h3>Output Folder</h3>
+                            <p id="output-folder-path" class="folder-path">No folder selected</p>
+                            <button class="btn-secondary" onclick="pywebview.api.select_output_folder()">
+                                <i data-feather="folder-plus"></i>
+                                Select Output Folder
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <div class="batch-controls">
+                        <button id="start-batch-btn" class="btn-primary large" onclick="pywebview.api.start_batch_processing()">
+                            <i data-feather="play"></i>
+                            Start Batch Processing
+                        </button>
+                        <button id="stop-batch-btn" class="btn-secondary large" onclick="pywebview.api.stop_batch_processing()" style="display: none;">
+                            <i data-feather="square"></i>
+                            Stop Processing
+                        </button>
+                    </div>
+                </div>
+                
+                <div class="progress-section">
+                    <div class="progress-header">
+                        <h3>Processing Progress</h3>
+                        <span class="progress-text">0%</span>
+                    </div>
+                    <div class="progress-bar-container">
+                        <div id="progress-bar" class="progress-bar"></div>
+                    </div>
+                </div>
+                
+                <div class="log-section">
+                    <div class="log-header">
+                        <h3>Processing Log</h3>
+                        <button class="btn-icon" onclick="clearLog()">
+                            <i data-feather="trash-2"></i>
+                        </button>
+                    </div>
+                    <div id="log-console" class="log-console"></div>
+                </div>
+            </div>
+
+            <!-- Settings Tab -->
+            <div id="settings" class="tab-content">
+                <div class="content-header">
+                    <h1 class="page-title">Settings</h1>
+                    <p class="page-subtitle">Customize your background removal experience</p>
+                </div>
+                
+                <div class="settings-grid">
+                    <div class="setting-card">
+                        <div class="setting-icon">
+                            <i data-feather="image"></i>
+                        </div>
+                        <h3>Output Quality</h3>
+                        <p>Choose the quality of processed images</p>
+                        <select class="setting-select">
+                            <option value="high">High Quality</option>
+                            <option value="medium" selected>Medium Quality</option>
+                            <option value="low">Low Quality</option>
+                        </select>
+                    </div>
+                    
+                    <div class="setting-card">
+                        <div class="setting-icon">
+                            <i data-feather="file"></i>
+                        </div>
+                        <h3>Output Format</h3>
+                        <p>Default format for saved images</p>
+                        <select class="setting-select">
+                            <option value="png" selected>PNG</option>
+                            <option value="jpg">JPG</option>
+                            <option value="webp">WebP</option>
+                        </select>
+                    </div>
+                    
+                    <div class="setting-card">
+                        <div class="setting-icon">
+                            <i data-feather="moon"></i>
+                        </div>
+                        <h3>Theme</h3>
+                        <p>Choose your preferred theme</p>
+                        <div class="theme-toggle">
+                            <button class="theme-btn active" data-theme="dark">
+                                <i data-feather="moon"></i>
+                                Dark
+                            </button>
+                            <button class="theme-btn" data-theme="light">
+                                <i data-feather="sun"></i>
+                                Light
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- About Tab -->
+            <div id="about" class="tab-content">
+                <div class="content-header">
+                    <h1 class="page-title">About</h1>
+                    <p class="page-subtitle">AI Background Remover Pro v2.0</p>
+                </div>
+                
+                <div class="about-content">
+                    <div class="about-card">
+                        <img src="img/logo.png" alt="Logo" class="about-logo">
+                        <h2>AI Background Remover Pro</h2>
+                        <p class="version">Version 2.0.0</p>
+                        <p class="description">
+                            A powerful desktop application that uses advanced AI technology to remove backgrounds 
+                            from images with precision and speed. Built with Python and modern web technologies.
+                        </p>
+                        
+                        <div class="features-list">
+                            <h3>Features</h3>
+                            <ul>
+                                <li><i data-feather="check"></i> AI-powered background removal</li>
+                                <li><i data-feather="check"></i> Batch processing support</li>
+                                <li><i data-feather="check"></i> Multiple format support</li>
+                                <li><i data-feather="check"></i> High-quality output</li>
+                            </ul>
+                            <p class="version m-t-20">Made By Ahmed (Crasius)</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Support Tab -->
+            <div id="support" class="tab-content">
+                <div class="content-header">
+                    <h1 class="page-title">Support</h1>
+                    <p class="page-subtitle">Get help and learn how to use the application</p>
+                </div>
+                
+                <div class="support-grid">
+                    <div class="support-card">
+                        <div class="support-icon">
+                            <i data-feather="book-open"></i>
+                        </div>
+                        <h3>User Guide</h3>
+                        <p>Learn how to use all features effectively</p>
+                        <button class="btn-secondary">
+                            <i data-feather="external-link"></i>
+                            Open Guide
+                        </button>
+                    </div>
+                    
+                    <div class="support-card">
+                        <div class="support-icon">
+                            <i data-feather="message-circle"></i>
+                        </div>
+                        <h3>Contact Support</h3>
+                        <p>Get help from our support team</p>
+                        <button class="btn-secondary">
+                            <i data-feather="mail"></i>
+                            Send Message
+                        </button>
+                    </div>
+                    
+                    <div class="support-card">
+                        <div class="support-icon">
+                            <i data-feather="github"></i>
+                        </div>
+                        <h3>Report Issues</h3>
+                        <p>Report bugs or request features</p>
+                        <button class="btn-secondary">
+                            <i data-feather="bug"></i>
+                            Report Bug
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- License Tab -->
+            <div id="license" class="tab-content">
+                <div class="content-header">
+                    <h1 class="page-title">MIT License</h1>
+                    <p class="page-subtitle">Open source license for AI Background Remover Pro</p>
+                </div>
+                
+                <div class="license-content">
+                    <div class="license-card">
+                        <div class="license-header">
+                            <i data-feather="file-text"></i>
+                            <h2>MIT License</h2>
+                        </div>
+                        
+                        <div class="license-text">
+                            <p><strong>Copyright (c) 2025 Ahmed (Crasius)</strong></p>
+                            <br>
+                            <p>Permission is hereby granted, free of charge, to any person obtaining a copy
+                            of this software and associated documentation files (the "Software"), to deal
+                            in the Software without restriction, including without limitation the rights
+                            to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+                            copies of the Software, and to permit persons to whom the Software is
+                            furnished to do so, subject to the following conditions:</p>
+                            <br>
+                            <p>The above copyright notice and this permission notice shall be included in all
+                            copies or substantial portions of the Software.</p>
+                            <br>
+                            <p><strong>THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+                            IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+                            FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+                            AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+                            LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+                            OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+                            SOFTWARE.</strong></p>
+                        </div>
+                        
+                        <div class="license-footer">
+                            <div class="license-info">
+                                <h3>What this means:</h3>
+                                <ul>
+                                    <li><i data-feather="check"></i> You can use this software for any purpose</li>
+                                    <li><i data-feather="check"></i> You can modify and distribute the software</li>
+                                    <li><i data-feather="check"></i> You can use it in commercial projects</li>
+                                    <li><i data-feather="check"></i> No warranty or liability from the author</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script src="script.js"></script>
+    <script>
+        // Initialize Feather icons
+        feather.replace();
+    </script>
+</body>
+</html>
